@@ -32,7 +32,7 @@ jobs:
           ./scripts/build-awg.sh  # пример скрипта сборки (нужно уточнить точный в репе)
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: awg-ipk
           path: ./bin/packages/
