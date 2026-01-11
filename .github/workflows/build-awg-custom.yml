@@ -1,0 +1,38 @@
+name: Build AWG 2.0 for ImmortalWrt
+
+on:
+  workflow_dispatch: # позволяет запускать вручную
+
+jobs:
+  build_awg:
+    runs-on: ubuntu-latest
+    env:
+      tag: "24.10.4" # версия ImmortalWrt
+      pkgarch: "aarch64_cortex-a53"
+      target: "mediatek"
+      subtarget: "mt7622"
+      vermagic: "6.6.110~8d841c819c7b91420c62700061d731c6-r1" # именно твоё ядро
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up build environment
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential git wget curl unzip python3 python3-pip
+
+      - name: Build AWG module
+        run: |
+          git clone --branch ${{ env.tag }} https://github.com/itdoginfo/domain-routing-openwrt awg-src
+          cd awg-src
+          export PKGARCH=${{ env.pkgarch }}
+          export TARGET=${{ env.target }}
+          export SUBTARGET=${{ env.subtarget }}
+          export VERMAGIC=${{ env.vermagic }}
+          ./scripts/build-awg.sh  # пример скрипта сборки (нужно уточнить точный в репе)
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: awg-ipk
+          path: ./bin/packages/
